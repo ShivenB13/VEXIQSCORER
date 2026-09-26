@@ -1,0 +1,612 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Match Scorer · AP3X ROBOTICS · 9863S</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=JetBrains+Mono:wght@400;500;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#0a0a0a;
+    --surface:#121212;
+    --surface-2:#181818;
+    --line:#2a2a26;
+    --white:#f5f5f0;
+    --muted:#8c8c86;
+    --gold:#cba135;
+    --gold-dim:#5c4a1c;
+    --red:#e1352b;
+    --blue:#1c6fee;
+    --yellow:#e8c34a;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    background:var(--bg);
+    color:var(--white);
+    font-family:'Inter',system-ui,sans-serif;
+    line-height:1.6;
+    -webkit-font-smoothing:antialiased;
+  }
+  .mono{
+    font-family:'JetBrains Mono',monospace;
+    text-transform:uppercase;
+    letter-spacing:0.14em;
+  }
+  a{color:inherit;}
+  .container{max-width:1100px;margin:0 auto;padding:0 32px;}
+  .display{
+    font-family:'Anton',sans-serif;
+    font-weight:400;
+    text-transform:uppercase;
+    line-height:0.92;
+    letter-spacing:0.01em;
+    margin:0;
+  }
+
+  /* grid backdrop */
+  .grid-bg{
+    background-image:
+      linear-gradient(to right, rgba(255,255,255,0.035) 1px, transparent 1px),
+      linear-gradient(to bottom, rgba(255,255,255,0.035) 1px, transparent 1px);
+    background-size:42px 42px;
+  }
+
+  /* NAV */
+  header.site-nav{
+    position:sticky;top:0;z-index:30;
+    background:rgba(10,10,10,0.92);
+    backdrop-filter:blur(6px);
+    border-bottom:1px solid var(--line);
+  }
+  .nav-row{
+    display:flex;align-items:center;justify-content:space-between;
+    padding:18px 32px;max-width:1100px;margin:0 auto;
+  }
+  .brand{
+    display:flex;align-items:center;gap:10px;text-decoration:none;
+    font-family:'JetBrains Mono',monospace;font-weight:700;font-size:15px;
+    letter-spacing:0.1em;
+  }
+  .brand .mark{
+    width:22px;height:22px;border-radius:50%;
+    border:2px solid var(--gold);
+    display:inline-block;position:relative;
+  }
+  .brand .mark::after{
+    content:'';position:absolute;top:3px;left:3px;width:8px;height:8px;
+    border-radius:50%;background:var(--gold);
+  }
+  .brand span.ap3x{color:var(--white);}
+  .brand span.rob{color:var(--gold);}
+  .nav-links{display:flex;gap:26px;}
+  .nav-links a{
+    text-decoration:none;color:var(--muted);
+    font-family:'JetBrains Mono',monospace;font-size:12px;
+    text-transform:uppercase;letter-spacing:0.12em;
+  }
+  .nav-links a:hover, .nav-links a.active{color:var(--white);}
+
+  /* HERO */
+  .hero{padding:80px 0 56px;border-bottom:1px solid var(--line);position:relative;}
+  .hero-inner{
+    display:grid;grid-template-columns:1.1fr 0.9fr;gap:48px;align-items:center;
+  }
+  @media(max-width:860px){ .hero-inner{grid-template-columns:1fr;} }
+  .kicker{color:var(--muted);font-size:12px;margin-bottom:22px;}
+  .kicker .sep{color:var(--gold);margin:0 8px;}
+  .hero h1{font-size:clamp(46px,7vw,88px);}
+  .hero h1 .line1{color:var(--white);display:block;}
+  .hero h1 .line2{color:var(--gold);display:block;}
+  .hero p{color:var(--muted);max-width:480px;margin-top:22px;font-size:16px;}
+  .hero-ctas{display:flex;gap:14px;margin-top:32px;flex-wrap:wrap;}
+  .btn{
+    display:inline-flex;align-items:center;gap:8px;
+    padding:14px 26px;font-size:12px;font-weight:700;
+    text-decoration:none;cursor:pointer;
+    font-family:'JetBrains Mono',monospace;text-transform:uppercase;letter-spacing:0.12em;
+    border:1.5px solid transparent;
+  }
+  .btn-primary{background:var(--gold);color:#0a0a0a;}
+  .btn-primary:hover{background:#e0b84a;}
+  .btn-ghost{background:transparent;border-color:var(--line);color:var(--white);}
+  .btn-ghost:hover{border-color:var(--gold);}
+
+  .frame-box{
+    position:relative;border:1.5px solid var(--gold-dim);padding:10px;
+  }
+  .frame-box::before{
+    content:'';position:absolute;top:-8px;left:-8px;width:24px;height:24px;
+    border-top:1.5px solid var(--gold);border-left:1.5px solid var(--gold);
+  }
+  .frame-box::after{
+    content:'';position:absolute;bottom:-8px;right:-8px;width:24px;height:24px;
+    border-bottom:1.5px solid var(--gold);border-right:1.5px solid var(--gold);
+  }
+  .frame-inner{
+    background:var(--surface);padding:34px 18px;text-align:center;
+  }
+  .frame-inner .big-total{
+    font-family:'Anton',sans-serif;font-size:88px;color:var(--gold);line-height:1;
+  }
+  .frame-inner .cap{
+    font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--muted);
+    text-transform:uppercase;letter-spacing:0.14em;margin-top:10px;
+  }
+  .frame-caption{
+    font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--muted);
+    text-transform:uppercase;letter-spacing:0.1em;margin-top:10px;text-align:center;
+  }
+
+  /* STAT ROW */
+  .stat-row{display:flex;gap:56px;margin-top:48px;flex-wrap:wrap;}
+  .stat{min-width:110px;}
+  .stat .num{font-family:'Anton',sans-serif;font-size:44px;color:var(--gold);line-height:1;}
+  .stat .num sup{font-size:18px;}
+  .stat .cap{
+    font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--muted);
+    text-transform:uppercase;letter-spacing:0.1em;margin-top:6px;
+  }
+
+  section{padding:64px 0;border-bottom:1px solid var(--line);}
+  section:last-of-type{border-bottom:none;}
+  .section-label{color:var(--gold);font-size:12px;margin-bottom:10px;}
+  section h2.display{font-size:clamp(30px,4vw,44px);margin-bottom:12px;}
+  section > .intro{color:var(--muted);max-width:600px;font-size:15px;margin-bottom:36px;}
+
+  /* SCORER LAYOUT */
+  .scorer-grid{
+    display:grid;grid-template-columns:1fr 300px;gap:28px;
+  }
+  @media(max-width:820px){ .scorer-grid{grid-template-columns:1fr;} }
+
+  .goal-card{
+    background:var(--surface);border:1px solid var(--line);
+    padding:18px 20px;display:flex;align-items:center;justify-content:space-between;
+    margin-bottom:10px;
+  }
+  .goal-info{display:flex;align-items:center;gap:16px;}
+  .goal-chip{
+    width:38px;height:38px;flex-shrink:0;
+    display:flex;align-items:center;justify-content:center;
+    font-family:'JetBrains Mono',monospace;font-weight:700;font-size:12px;color:#0a0a0a;
+  }
+  .goal-name{font-weight:600;font-size:15px;}
+  .goal-points{
+    color:var(--muted);font-size:11px;font-family:'JetBrains Mono',monospace;
+    text-transform:uppercase;letter-spacing:0.08em;margin-top:3px;
+  }
+  .stepper{display:flex;align-items:center;gap:12px;}
+  .stepper button{
+    width:32px;height:32px;border:1px solid var(--line);
+    background:var(--surface-2);color:var(--white);font-size:17px;cursor:pointer;
+    display:flex;align-items:center;justify-content:center;line-height:1;
+    font-family:'JetBrains Mono',monospace;
+  }
+  .stepper button:hover{border-color:var(--gold);color:var(--gold);}
+  .stepper .count{
+    min-width:28px;text-align:center;font-family:'Anton',sans-serif;font-size:19px;
+  }
+
+  .bonus-row{
+    background:var(--surface);border:1px solid var(--line);
+    padding:18px 20px;margin-top:4px;
+  }
+  .bonus-row label{
+    font-size:11px;color:var(--muted);display:block;margin-bottom:10px;
+    font-family:'JetBrains Mono',monospace;text-transform:uppercase;letter-spacing:0.08em;
+  }
+  .bonus-row input{
+    width:100%;background:var(--surface-2);border:1px solid var(--line);color:var(--white);
+    padding:10px 12px;font-family:'Anton',sans-serif;font-size:16px;
+  }
+
+  .total-panel{
+    background:var(--surface);border:1px solid var(--gold-dim);
+    padding:26px;height:fit-content;position:sticky;top:90px;
+  }
+  .total-label{
+    font-family:'JetBrains Mono',monospace;color:var(--muted);font-size:11px;
+    text-transform:uppercase;letter-spacing:0.12em;margin-bottom:6px;
+  }
+  .total-value{
+    font-family:'Anton',sans-serif;font-size:56px;color:var(--gold);line-height:1;
+  }
+  .total-sub{
+    font-family:'JetBrains Mono',monospace;color:var(--muted);font-size:11px;
+    text-transform:uppercase;letter-spacing:0.08em;margin-top:8px;margin-bottom:20px;
+  }
+  .breakdown{font-size:13px;color:var(--muted);border-top:1px solid var(--line);padding-top:16px;}
+  .breakdown div{display:flex;justify-content:space-between;padding:4px 0;}
+  .reset-btn{width:100%;margin-top:18px;}
+
+  /* PHOTO SECTION */
+  .photo-grid{display:grid;grid-template-columns:1fr 1fr;gap:28px;}
+  @media(max-width:820px){ .photo-grid{grid-template-columns:1fr;} }
+  .upload-box{
+    border:1.5px dashed var(--line);
+    padding:32px;text-align:center;background:var(--surface);
+  }
+  .upload-box .hint{
+    font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--muted);
+    text-transform:uppercase;letter-spacing:0.1em;
+  }
+  .upload-box input[type=file]{display:none;}
+  .upload-box .btn{margin-top:16px;}
+  .preview-wrap{margin-top:18px;overflow:hidden;border:1px solid var(--line);display:none;}
+  .preview-wrap img{width:100%;display:block;}
+  .disclaimer{
+    font-family:'JetBrains Mono',monospace;
+    font-size:11px;color:var(--muted);background:var(--surface-2);
+    border:1px solid var(--line);padding:14px 16px;margin-top:16px;
+    text-transform:uppercase;letter-spacing:0.05em;line-height:1.7;
+  }
+  .results-box{
+    background:var(--surface);border:1px solid var(--gold-dim);
+    padding:22px;
+  }
+  .result-row{
+    display:flex;align-items:center;justify-content:space-between;
+    padding:12px 0;border-bottom:1px solid var(--line);
+  }
+  .result-row:last-child{border-bottom:none;}
+  .result-swatch{width:14px;height:14px;display:inline-block;margin-right:12px;}
+  .result-name{
+    display:flex;align-items:center;font-size:13px;
+    font-family:'JetBrains Mono',monospace;text-transform:uppercase;letter-spacing:0.06em;
+    color:var(--muted);
+  }
+  .result-count{font-family:'Anton',sans-serif;font-size:22px;color:var(--gold);}
+  .placeholder{
+    color:var(--muted);font-size:12px;text-align:center;padding:24px 0;
+    font-family:'JetBrains Mono',monospace;text-transform:uppercase;letter-spacing:0.08em;
+  }
+
+  footer{padding:36px 0;text-align:center;color:var(--muted);font-size:11px;
+    font-family:'JetBrains Mono',monospace;text-transform:uppercase;letter-spacing:0.12em;
+    border-top:1px solid var(--line);}
+</style>
+</head>
+<body>
+
+<header class="site-nav">
+  <div class="nav-row">
+    <a class="brand" href="https://sb-vex.github.io/AP3X-ROBOTICS/">
+      <span class="mark"></span><span class="ap3x">AP3X</span> <span class="rob">ROBOTICS</span>
+    </a>
+    <nav class="nav-links">
+      <a href="https://sb-vex.github.io/AP3X-ROBOTICS/">Home</a>
+      <a href="#manual" class="active">Scorer</a>
+      <a href="#photo">Photo scan</a>
+    </nav>
+  </div>
+</header>
+
+<section class="hero grid-bg">
+  <div class="container">
+    <div class="hero-inner">
+      <div>
+        <div class="kicker mono">TEAM 9863S <span class="sep">·</span> LEVEL UP <span class="sep">·</span> MATCH SCORER</div>
+        <h1 class="display hero-h1">
+          <span class="line1">MATCH</span><span class="line2">SCORER</span>
+        </h1>
+        <p>Tap through Floor and Pyramid Goals for a live total, or scan a field photo for a rough bean bag read you correct by hand.</p>
+        <div class="hero-ctas">
+          <a href="#manual" class="btn btn-primary">Start scoring</a>
+          <a href="#photo" class="btn btn-ghost">Try photo scan</a>
+        </div>
+        <div class="stat-row">
+          <div class="stat"><div class="num">1<sup>pt</sup></div><div class="cap">Floor Goal</div></div>
+          <div class="stat"><div class="num">12</div><div class="cap">Level 3</div></div>
+          <div class="stat"><div class="num">16</div><div class="cap">Level 4 · yellow</div></div>
+        </div>
+      </div>
+      <div>
+        <div class="frame-box">
+          <div class="frame-inner">
+            <div class="big-total" id="heroTotal">0</div>
+            <div class="cap">Current total</div>
+          </div>
+        </div>
+        <div class="frame-caption">LIVE RUN TOTAL <span style="color:var(--gold);">·</span> SCROLL TO SCORE</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="manual">
+  <div class="container">
+    <div class="section-label mono">Manual scorer</div>
+    <h2 class="display">Count what's on the field</h2>
+    <p class="intro">Tap + as you spot each scored bean bag. Points follow the 2026–27 Level Up manual: 1 pt per Floor Goal, and 3 / 6 / 12 / 16 pts for Pyramid Goal levels L1–L4 (L4 counts yellow bags only).</p>
+
+    <div class="scorer-grid">
+      <div>
+        <div class="goal-card" data-goal="floor">
+          <div class="goal-info">
+            <span class="goal-chip" style="background:#c7c7c2;">F</span>
+            <div><div class="goal-name">Floor Goal</div><div class="goal-points">1 PT EACH</div></div>
+          </div>
+          <div class="stepper">
+            <button data-action="dec">−</button>
+            <span class="count" data-count="floor">0</span>
+            <button data-action="inc">+</button>
+          </div>
+        </div>
+
+        <div class="goal-card" data-goal="l1">
+          <div class="goal-info">
+            <span class="goal-chip" style="background:var(--yellow);">L1</span>
+            <div><div class="goal-name">Pyramid — Level 1</div><div class="goal-points">3 PTS EACH</div></div>
+          </div>
+          <div class="stepper">
+            <button data-action="dec">−</button>
+            <span class="count" data-count="l1">0</span>
+            <button data-action="inc">+</button>
+          </div>
+        </div>
+
+        <div class="goal-card" data-goal="l2">
+          <div class="goal-info">
+            <span class="goal-chip" style="background:var(--yellow);">L2</span>
+            <div><div class="goal-name">Pyramid — Level 2</div><div class="goal-points">6 PTS EACH</div></div>
+          </div>
+          <div class="stepper">
+            <button data-action="dec">−</button>
+            <span class="count" data-count="l2">0</span>
+            <button data-action="inc">+</button>
+          </div>
+        </div>
+
+        <div class="goal-card" data-goal="l3">
+          <div class="goal-info">
+            <span class="goal-chip" style="background:var(--yellow);">L3</span>
+            <div><div class="goal-name">Pyramid — Level 3</div><div class="goal-points">12 PTS EACH</div></div>
+          </div>
+          <div class="stepper">
+            <button data-action="dec">−</button>
+            <span class="count" data-count="l3">0</span>
+            <button data-action="inc">+</button>
+          </div>
+        </div>
+
+        <div class="goal-card" data-goal="l4">
+          <div class="goal-info">
+            <span class="goal-chip" style="background:var(--yellow);">L4</span>
+            <div><div class="goal-name">Pyramid — Level 4</div><div class="goal-points">16 PTS EACH · YELLOW ONLY</div></div>
+          </div>
+          <div class="stepper">
+            <button data-action="dec">−</button>
+            <span class="count" data-count="l4">0</span>
+            <button data-action="inc">+</button>
+          </div>
+        </div>
+
+        <div class="bonus-row">
+          <label for="bonusPts">Other points (autonomous / bonus rules not covered above)</label>
+          <input type="number" id="bonusPts" value="0" inputmode="numeric">
+        </div>
+      </div>
+
+      <div class="total-panel">
+        <div class="total-label">Total score</div>
+        <div class="total-value" id="totalValue">0</div>
+        <div class="total-sub" id="totalSub">0 BEAN BAGS SCORED</div>
+        <div class="breakdown" id="breakdown"></div>
+        <button class="btn btn-ghost reset-btn" id="resetBtn">Reset all</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="photo">
+  <div class="container">
+    <div class="section-label mono">Photo scorer · experimental</div>
+    <h2 class="display">Scan a field photo</h2>
+    <p class="intro">Upload or capture a photo and this will estimate how many yellow, red and blue bean bags it can see by colour. It can't tell which goal a bag is sitting in — use the counts as a starting point, then adjust the tallies above by hand.</p>
+
+    <div class="photo-grid">
+      <div>
+        <div class="upload-box">
+          <div class="hint">Upload a photo or use your camera</div>
+          <label class="btn btn-primary" for="photoInput">Choose photo</label>
+          <input type="file" id="photoInput" accept="image/*" capture="environment">
+          <div class="preview-wrap" id="previewWrap"><img id="previewImg" alt="Uploaded field photo"></div>
+        </div>
+        <div class="disclaimer">This is a basic colour-blob detector running in your browser, not real object recognition. Glare, shadows, and overlapping bags will throw it off — always double check the count against the photo before trusting it.</div>
+      </div>
+
+      <div class="results-box" id="resultsBox">
+        <div class="placeholder" id="resultsPlaceholder">Detected bean bags will show up here once you upload a photo.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  AP3X ROBOTICS · TEAM 9863S · SURREY, ENGLAND
+</footer>
+
+<script>
+  // ---------- Manual scorer ----------
+  const POINTS = { floor:1, l1:3, l2:6, l3:12, l4:16 };
+  const LABELS = { floor:'Floor Goals', l1:'Level 1', l2:'Level 2', l3:'Level 3', l4:'Level 4' };
+  const STORAGE_KEY = 'ap3x_levelup_scorer_v1';
+
+  let counts = { floor:0, l1:0, l2:0, l3:0, l4:0 };
+  try {
+    const saved = JSON.parse(localStorage.getItem(STORAGE_KEY));
+    if (saved && typeof saved === 'object') counts = Object.assign(counts, saved);
+  } catch(e) {}
+
+  function renderCounts(){
+    Object.keys(counts).forEach(k => {
+      const el = document.querySelector(`[data-count="${k}"]`);
+      if (el) el.textContent = counts[k];
+    });
+    const bonus = Number(document.getElementById('bonusPts').value) || 0;
+    let total = bonus;
+    let bags = 0;
+    const breakdown = document.getElementById('breakdown');
+    breakdown.innerHTML = '';
+    Object.keys(counts).forEach(k => {
+      const pts = counts[k] * POINTS[k];
+      total += pts;
+      bags += counts[k];
+      const row = document.createElement('div');
+      row.innerHTML = `<span>${LABELS[k]} (${counts[k]}×${POINTS[k]})</span><span>${pts}</span>`;
+      breakdown.appendChild(row);
+    });
+    if (bonus) {
+      const row = document.createElement('div');
+      row.innerHTML = `<span>Other points</span><span>${bonus}</span>`;
+      breakdown.appendChild(row);
+    }
+    document.getElementById('totalValue').textContent = total;
+    document.getElementById('totalSub').textContent = `${bags} BEAN BAG${bags===1?'':'S'} SCORED`;
+    document.getElementById('heroTotal').textContent = total;
+    try { localStorage.setItem(STORAGE_KEY, JSON.stringify(counts)); } catch(e) {}
+  }
+
+  document.querySelectorAll('.goal-card').forEach(card => {
+    const goal = card.dataset.goal;
+    card.querySelector('[data-action="inc"]').addEventListener('click', () => {
+      counts[goal]++; renderCounts();
+    });
+    card.querySelector('[data-action="dec"]').addEventListener('click', () => {
+      counts[goal] = Math.max(0, counts[goal]-1); renderCounts();
+    });
+  });
+  document.getElementById('bonusPts').addEventListener('input', renderCounts);
+  document.getElementById('resetBtn').addEventListener('click', () => {
+    counts = { floor:0, l1:0, l2:0, l3:0, l4:0 };
+    document.getElementById('bonusPts').value = 0;
+    renderCounts();
+  });
+  renderCounts();
+
+  // ---------- Photo colour-blob detector ----------
+  const photoInput = document.getElementById('photoInput');
+  const previewWrap = document.getElementById('previewWrap');
+  const previewImg = document.getElementById('previewImg');
+  const resultsBox = document.getElementById('resultsBox');
+
+  const COLOR_DEFS = [
+    { key:'yellow', label:'Yellow bean bags', swatch:'#e8c34a',
+      test:(h,s,v)=> h>=38 && h<=62 && s>0.45 && v>0.5 },
+    { key:'red', label:'Red bean bags', swatch:'#e1352b',
+      test:(h,s,v)=> (h<=12 || h>=350) && s>0.45 && v>0.35 },
+    { key:'blue', label:'Blue bean bags', swatch:'#1c6fee',
+      test:(h,s,v)=> h>=200 && h<=235 && s>0.35 && v>0.35 },
+  ];
+
+  function rgbToHsv(r,g,b){
+    r/=255; g/=255; b/=255;
+    const max=Math.max(r,g,b), min=Math.min(r,g,b);
+    const d=max-min;
+    let h=0;
+    if(d!==0){
+      if(max===r) h=60*(((g-b)/d)%6);
+      else if(max===g) h=60*((b-r)/d+2);
+      else h=60*((r-g)/d+4);
+    }
+    if(h<0) h+=360;
+    const s = max===0?0:d/max;
+    const v = max;
+    return [h,s,v];
+  }
+
+  function detectBlobs(imageData, w, h, colorTest){
+    const step = 3;
+    const gw = Math.floor(w/step), gh = Math.floor(h/step);
+    const grid = new Uint8Array(gw*gh);
+    for(let gy=0; gy<gh; gy++){
+      for(let gx=0; gx<gw; gx++){
+        const x = gx*step, y = gy*step;
+        const i = (y*w+x)*4;
+        const r=imageData[i], g=imageData[i+1], b=imageData[i+2];
+        const [hue,sat,val] = rgbToHsv(r,g,b);
+        grid[gy*gw+gx] = colorTest(hue,sat,val) ? 1 : 0;
+      }
+    }
+    const visited = new Uint8Array(gw*gh);
+    let blobCount = 0;
+    const minBlobSize = Math.max(6, Math.floor((gw*gh)*0.0015));
+    for(let idx=0; idx<gw*gh; idx++){
+      if(grid[idx] && !visited[idx]){
+        let size = 0;
+        const stack = [idx];
+        visited[idx] = 1;
+        while(stack.length){
+          const cur = stack.pop();
+          size++;
+          const cx = cur % gw, cy = (cur/gw)|0;
+          const neighbours = [
+            [cx-1,cy],[cx+1,cy],[cx,cy-1],[cx,cy+1]
+          ];
+          for(const [nx,ny] of neighbours){
+            if(nx>=0 && nx<gw && ny>=0 && ny<gh){
+              const nIdx = ny*gw+nx;
+              if(grid[nIdx] && !visited[nIdx]){
+                visited[nIdx]=1;
+                stack.push(nIdx);
+              }
+            }
+          }
+        }
+        if(size >= minBlobSize) blobCount++;
+      }
+    }
+    return blobCount;
+  }
+
+  function analyzeImage(img){
+    const maxDim = 480;
+    const scale = Math.min(1, maxDim / Math.max(img.width, img.height));
+    const w = Math.round(img.width*scale), h = Math.round(img.height*scale);
+    const canvas = document.createElement('canvas');
+    canvas.width = w; canvas.height = h;
+    const ctx = canvas.getContext('2d');
+    ctx.drawImage(img, 0, 0, w, h);
+    const data = ctx.getImageData(0,0,w,h).data;
+
+    resultsBox.innerHTML = '';
+    let anyFound = false;
+    COLOR_DEFS.forEach(def => {
+      const count = detectBlobs(data, w, h, def.test);
+      if (count > 0) anyFound = true;
+      const row = document.createElement('div');
+      row.className = 'result-row';
+      row.innerHTML = `
+        <span class="result-name"><span class="result-swatch" style="background:${def.swatch};"></span>${def.label}</span>
+        <span class="result-count">${count}</span>`;
+      resultsBox.appendChild(row);
+    });
+    const note = document.createElement('div');
+    note.className = 'disclaimer';
+    note.style.marginTop = '16px';
+    note.textContent = anyFound
+      ? 'Estimate only — recount by eye against the photo, then enter the real totals per goal in the scorer above.'
+      : "Didn't find any confident colour matches. Try better lighting or a closer, more direct shot of the field.";
+    resultsBox.appendChild(note);
+  }
+
+  photoInput.addEventListener('change', (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = (ev) => {
+      previewImg.src = ev.target.result;
+      previewWrap.style.display = 'block';
+      const img = new Image();
+      img.onload = () => analyzeImage(img);
+      img.src = ev.target.result;
+    };
+    reader.readAsDataURL(file);
+  });
+</script>
+
+</body>
+</html>
